@@ -1,44 +1,29 @@
-'''
+"""
 
 Project Euler Solutions - Problem 04
 
 By Chris Mander (http://github.com/manderc3)
 
-'''
+"""
 
 import time
 
+def checkPalindrome(product):
+	str_product = str(product)
+
+	for i in range(len(str_product)):
+		if (str_product[i] == str_product[len(str_product) - 1 - i]):
+			continue
+		else:
+			return False
+	
+	return True
+
 def largestPalindrome(n):
-	''' Palindrome test, brute force - O(n^2) time '''
-
-	x = y = int('1' + '0' * (n - 1)) # Setting initial factors
-
-	largest_product = 0
-
-	while (x < int('1' + '0' * n)): # Initial factor * 10
-		while (y < int('1' + '0' * n)):
-			product = str(x * y)
-			is_palindrome = True
-
-			for i in range(len(product)):
-				if (product[i] == product[len(product) - 1 - i]):
-					continue
-				else:
-					is_palindrome = False
-					break
-
-			if (is_palindrome and int(product) > largest_product):
-				largest_product = int(product)
-
-			y += 1
-		
-		x += 1
-		y = int('1' + '0' * (n - 1)) # Reset y to intial factor
-
-	return largest_product
-
-def largestPalindrome2(n):
-	''' Optimised version that avoids duplicate operations. '''
+	"""
+	Optimised version that avoids duplicate operations. Runs half of the number of operations
+	that a brute force approach does.
+	"""
 
 	largest_product = 0
 	lower_limit = 10 ** (n - 1)
@@ -49,7 +34,7 @@ def largestPalindrome2(n):
 						   (1, 0)) # For loop #3 (All operations using odd and even operands)
 
 	for i in range(3):
-		''' Set initial values using (10 ^ n - 1 + appropriate mask). '''
+		""" Set initial values using (10 ^ n - 1 + appropriate mask). """
 		x = lower_limit + initial_value_masks[i][0]
 		y = lower_limit + initial_value_masks[i][1]
 
@@ -69,18 +54,7 @@ def largestPalindrome2(n):
 
 	return largest_product
 
-def checkPalindrome(product):
-
-	str_product = str(product)
-
-	for i in range(len(str_product)):
-		if (str_product[i] == str_product[len(str_product) - 1 - i]):
-			continue
-		else:
-			return False
-	
-	return True
-
-start = time.clock()
-print(largestPalindrome2(3))
-print("Time: " + str(time.clock() - start))
+if __name__ == "__main__":
+	start = time.clock()
+	print(largestPalindrome(3))
+	print("Time: " + str(time.clock() - start))

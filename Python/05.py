@@ -1,18 +1,19 @@
-'''
+"""
 
 Project Euler Solutions - Problem 05
 
 By Chris Mander (http://github.com/manderc3)
 
-'''
+"""
 
 import time
 
 def smallestDividendRange(n):
-	''' 
+	""" 
 	Divisors (n // 2 + 1) to n are evenly divisible by divisors 1 to (n // 2). Therefore only half
-	of the total the number of divisors require checking.
-	'''
+	of the total the number of divisors require checking. Dividends that are not divisble by 20 can
+	also be skipped.
+	"""
 	dividend = n # TODO - try and find a logical starting point
 
 	while (True):
@@ -34,7 +35,7 @@ def smallestDividendRange(n):
 
 		dividend += n
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
 	start = time.clock()
 	print(smallestDividendRange(20))

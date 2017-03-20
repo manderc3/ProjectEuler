@@ -1,10 +1,10 @@
-'''
+"""
 
 Project Euler Solutions - Problem 08
 
 By Chris Mander (http://github.com/manderc3)
 
-'''
+"""
 
 import time
 
@@ -18,9 +18,9 @@ def getNextChar(f):
 def adjProduct(f_path, m_range):
 	"""
 	Scans a file and returns the highest product from a arbitrary range of ints.
-	This function does not work for files that contain text.
+	This function is strictly for files that only contain integers.
 	"""
-	f = open(f_path, 'r')
+	f = open(f_path, "r")
 
 	h_prd = 0
 
@@ -46,9 +46,7 @@ def adjProduct(f_path, m_range):
 
 	return h_prd
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	start = time.clock()
-	print(adjProduct('files/1000digits.txt', 13))
+	print(adjProduct("files/1000digits.txt", 13))
 	print("Time: " + str(time.clock() - start))
-
-
