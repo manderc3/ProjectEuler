@@ -21,9 +21,7 @@ def adjProduct(f_path, m_range):
 	This function is strictly for files that only contain integers.
 	"""
 	f = open(f_path, "r")
-
 	h_prd = 0
-
 	subjects = ["" for i in range(m_range)]
 	
 	for i in range(len(subjects)):
@@ -39,11 +37,9 @@ def adjProduct(f_path, m_range):
 			h_prd = c_prd
 
 		char = getNextChar(f)
-
 		subjects = subjects[1:] + [char]
 
 	f.close()
-
 	return h_prd
 
 if __name__ == "__main__":
