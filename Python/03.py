@@ -8,24 +8,21 @@ By Chris Mander (http://github.com/manderc3)
 
 import time
 from math import sqrt
+from common import isPrime
 
-def isPrime(n):
-	''' Simple primality test - O(sqrt(n)) time '''
-	
-	if (n == 2):
-		return True
+def largestPrimeFactor(n):
+	factor, divisor = n, 2
 
-	if (n <= 1 or n % 2 == 0 or n % 3 == 0):
-		return False
+	print(n / 2)
 
-	for i in range(2, int(sqrt(n)) + 1):
-		if (n % i == 0):
-			return False
-	
-	return True
+	while not isPrime(factor / divisor):
+		factor / 2
+		n += 1
+
+	return factor
 
 if __name__ == "__main__":
 	start = time.clock()
-	[print(str(i) + " " + str(isPrime(i))) for i in range(200)]
+	print(largestPrimeFactor(600851475143	))
 	print("Time: " + str(time.clock() - start))
 

@@ -1,15 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-int toThePower(int base, int exponent) {
-	int i, result = 1;
-
-	for (i = 0; i < exponent; i++) {
-		result *= base;
-	}
-
-	return result;
-}
+#include "common.h"
 
 int getIntLength(unsigned int product) {
 
