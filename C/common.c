@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "common.h" 
 
 int toThePower(int base, int exponent) {
@@ -8,4 +9,12 @@ int toThePower(int base, int exponent) {
 	}
 
 	return result;
+}
+
+char getNextChar(FILE* file) {
+	/**	To be used on files containing integers only. **/
+	char c = getc(file);
+	while (c == '\n')
+		c = getc(file);	
+	return c;
 }

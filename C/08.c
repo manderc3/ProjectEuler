@@ -1,17 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "common.h"
 
-char getNextChar(FILE*);
 size_t adjProduct(char*, const int);
 void updateSubjects(int*, char*, const int);
-
-char getNextChar(FILE* file) {
-	/**	To be used on files containing integers only. **/
-	char c = getc(file);
-	while (c == '\n')
-		c = getc(file);	
-	return c;
-}
 
 void updateSubjects(int* arr, char* c, int arr_size) {
 	int i;
