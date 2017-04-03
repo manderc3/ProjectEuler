@@ -89,6 +89,8 @@ char* getLongNumSum(char* f_path) {
 		addLongNums(opr1, opr2);
 	}
 
+	fclose(f);
+	free(opr2);
 	return opr1;
 }
 
@@ -100,5 +102,6 @@ int main(int argc, char* argv[]) {
 		printf("%c", num[i]);
 	printf("\n");
 
+	free(num);
 	return 0;
 }
