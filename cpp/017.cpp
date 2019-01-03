@@ -1,17 +1,17 @@
 #include <chrono>
 #include <cmath>
 #include <iostream>
-#include <map>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 using namespace std;
 using raw_nums = unordered_map<int, string>;
-using processed_nums = map<int, string>;
 
 /*
  * Author: Chris Mander @manderc3
+ * Description: Solution to Project Euler's seventeenth problem. Url is 'https://projecteuler.net/problem=17'.
+ *
  * Would be nice to account for ranges with an upper bound of over a thousand. Perhaps a story for another day?
  */
 raw_nums get_raw_num_map() noexcept
