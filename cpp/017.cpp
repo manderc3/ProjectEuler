@@ -46,11 +46,11 @@ int deduce_int_text_length(int num, const raw_nums& nums)
   while (multiplier >= 10) {
     switch (multiplier) {
       case 1000: {
-        number_string += nums.at(static_cast<int>(num / multiplier)) + nums.at(multiplier);
+        number_string += nums.at(abs(num / multiplier)) + nums.at(multiplier);
 	break;
       }
       case 100: {
-        number_string += nums.at(static_cast<int>(num / multiplier)) + nums.at(multiplier);
+        number_string += nums.at(abs(num / multiplier)) + nums.at(multiplier);
         if (num % multiplier != 0) number_string += "and";
 	break;
       }
@@ -61,7 +61,7 @@ int deduce_int_text_length(int num, const raw_nums& nums)
 	  number_string += nums.at(trimmed_num);
 	}
 	else {
-	  number_string += nums.at(static_cast<int>(trimmed_num / multiplier) * multiplier) + nums.at(trimmed_num % 10);
+	  number_string += nums.at(abs(trimmed_num / multiplier) * multiplier) + nums.at(trimmed_num % 10);
 	}
 	break;
       }
