@@ -77,7 +77,8 @@ int deduce_int_text_length(int num, const raw_nums& nums)
   return number_string.length();
 }
 
-int process_map(const raw_nums& nums)
+template<typename T>
+int process_map(T&& nums)
 {
   int sum = 0;
   for (int i = 1; i <= 1000; i++) {
