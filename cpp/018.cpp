@@ -14,8 +14,38 @@ struct Node
   Node(int v) : val(v) {}
 };
 
+void pretty_print(const std::shared_ptr<Node> root) {
+  std::vector<std::shared_ptr<Node>> nodes;
+
+  nodes.push_back(root);
+
+  unsigned row = 0, counter = 0;
+  
+  while (!nodes.empty()) {
+    auto node = nodes.front();
+    std::cout << node->val << " ";
+
+    // Only add nodes if they don't currently exist in queue
+    if (node->left  != nullptr && std::find(nodes.begin(), nodes.end(), node->left) == nodes.end())  nodes.push_back(node->left);
+    if (node->right != nullptr && std::find(nodes.begin(), nodes.end(), node->right) == nodes.end()) nodes.push_back(node->right);
+
+    nodes.erase(nodes.begin());
+
+    if (row == counter) {
+      ++row;
+      counter = 0;
+      std::cout << "\n";    
+    }
+    else {
+      ++counter;
+    }
+  }  
+}
+
 size_t find_maximum_sum(const std::shared_ptr<Node> node)
 {
+  /* The following call is expensive to run over large data structures. */
+  pretty_print(node);
   return 0;
 }
 
@@ -61,8 +91,10 @@ std::shared_ptr<Node> construct_tree(const std::array<int, size>& vals)
 
 int main()
 {
-  std::array<int, 10> triangle_numbers = { 3, 7, 4, 2, 4, 6, 8, 5, 9, 3 };
+  //std::array<int, 10> triangle_numbers = { 3, 7, 4, 2, 4, 6, 8, 5, 9, 3 };
 
+  std::array<int, 10> triangle_numbers = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+  
   auto t1 = std::chrono::system_clock::now();
   
   auto result = find_maximum_sum(construct_tree<triangle_numbers.size()>(triangle_numbers));
