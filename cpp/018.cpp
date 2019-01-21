@@ -3,7 +3,6 @@
 #include <chrono>
 #include <iostream>
 #include <memory>
-#include <queue>
 #include <stack>
 #include <vector>
 
@@ -26,8 +25,8 @@ void pretty_print(const std::shared_ptr<Node> root) {
     std::cout << node->val << " ";
 
     // Only add nodes if they don't currently exist in queue
-    if (node->left  != nullptr && std::find(nodes.begin(), nodes.end(), node->left) == nodes.end())  nodes.push_back(node->left);
-    if (node->right != nullptr && std::find(nodes.begin(), nodes.end(), node->right) == nodes.end()) nodes.push_back(node->right);
+    if (node->left  != nullptr && std::find(nodes.begin(), nodes.end(), node->left) == nodes.end())  { nodes.push_back(node->left); }
+    if (node->right != nullptr && std::find(nodes.begin(), nodes.end(), node->right) == nodes.end()) { nodes.push_back(node->right); }
 
     nodes.erase(nodes.begin());
 
@@ -42,11 +41,29 @@ void pretty_print(const std::shared_ptr<Node> root) {
   }  
 }
 
-size_t find_maximum_sum(const std::shared_ptr<Node> node)
+size_t find_maximum_sum(const std::shared_ptr<Node> root)
 {
-  /* The following call is expensive to run over large data structures. */
-  pretty_print(node);
-  return 0;
+  /* The following call is a needless expense. Esp. considering large data structures. */
+  // pretty_print(root);
+
+  unsigned largest_sum = 0;
+  std::stack<std::shared_ptr<Node>> nodes;
+  std::vector<std::shared_ptr<Node>> visited;
+
+  nodes.push(root);
+
+  while (!nodes.empty()) {
+    auto node = nodes.top();
+    nodes.pop();
+    visited.push_back(node);
+    
+    std::cout << node->val << "\n";
+
+    if (node->right != nullptr && std::find(visited.begin(), visited.end(), node->right) == visited.end()) { nodes.push(node->right); }
+    if (node->left  != nullptr && std::find(visited.begin(), visited.end(), node->left) == visited.end())  { nodes.push(node->left); }
+  }
+  
+  return largest_sum;
 }
 
 template<int size>
