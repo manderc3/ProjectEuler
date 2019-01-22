@@ -6,34 +6,6 @@
 #include <stack>
 #include <vector>
 
-
-  // std::stack<std::shared_ptr<Node>> nodes;
-//   std::vector<std::shared_ptr<Node>> visited;
-
-//   nodes.push(root);
-
-//   while (!nodes.empty()) {
-//     auto node = nodes.top();
-//     nodes.pop();
-//     visited.push_back(node);
-
-//     bool unwind = true;
-//     if (node->right != nullptr) {
-//       unwind = false;
-//       if (std::find(visited.begin(), visited.end(), node->right) == visited.end()) {
-// 	nodes.push(node->right);
-//       }
-//       if (std::find(visited.begin(), visited.end(), node->left) == visited.end()) {
-// 	nodes.push(node->left);
-//       }
-//     }
-
-//     current_sum += node->val;
-    
-//     if (current_sum > largest_sum) { largest_sum = current_sum; }
-// std::cout << "Current Node: " << node->val << "\t" << "Current Sum Total: " << current_sum << "\n";
-//     if (unwind)                    { current_sum -= node->val; }
-  
 struct Node
 {
   std::shared_ptr<Node> parent = nullptr, left = nullptr, right = nullptr;
