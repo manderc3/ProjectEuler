@@ -6,6 +6,34 @@
 #include <stack>
 #include <vector>
 
+
+  // std::stack<std::shared_ptr<Node>> nodes;
+//   std::vector<std::shared_ptr<Node>> visited;
+
+//   nodes.push(root);
+
+//   while (!nodes.empty()) {
+//     auto node = nodes.top();
+//     nodes.pop();
+//     visited.push_back(node);
+
+//     bool unwind = true;
+//     if (node->right != nullptr) {
+//       unwind = false;
+//       if (std::find(visited.begin(), visited.end(), node->right) == visited.end()) {
+// 	nodes.push(node->right);
+//       }
+//       if (std::find(visited.begin(), visited.end(), node->left) == visited.end()) {
+// 	nodes.push(node->left);
+//       }
+//     }
+
+//     current_sum += node->val;
+    
+//     if (current_sum > largest_sum) { largest_sum = current_sum; }
+// std::cout << "Current Node: " << node->val << "\t" << "Current Sum Total: " << current_sum << "\n";
+//     if (unwind)                    { current_sum -= node->val; }
+  
 struct Node
 {
   std::shared_ptr<Node> parent = nullptr, left = nullptr, right = nullptr;
@@ -25,8 +53,12 @@ void pretty_print(const std::shared_ptr<Node> root) {
     std::cout << node->val << " ";
 
     // Only add nodes if they don't currently exist in queue
-    if (node->left  != nullptr && std::find(nodes.begin(), nodes.end(), node->left) == nodes.end())  { nodes.push_back(node->left); }
-    if (node->right != nullptr && std::find(nodes.begin(), nodes.end(), node->right) == nodes.end()) { nodes.push_back(node->right); }
+    if (node->left  != nullptr && std::find(nodes.begin(), nodes.end(), node->left) == nodes.end()) {
+      nodes.push_back(node->left);
+    }
+    if (node->right != nullptr && std::find(nodes.begin(), nodes.end(), node->right) == nodes.end()) {
+      nodes.push_back(node->right);
+    }
 
     nodes.erase(nodes.begin());
 
@@ -41,27 +73,72 @@ void pretty_print(const std::shared_ptr<Node> root) {
   }  
 }
 
+std::shared_ptr<Node> get_final_node(std::shared_ptr<Node> root)
+{
+  auto node = root;
+  while (node->right != nullptr) { node = node->right; }
+  return node;
+}
+
 size_t find_maximum_sum(const std::shared_ptr<Node> root)
 {
   /* The following call is a needless expense. Esp. considering large data structures. */
   // pretty_print(root);
 
-  unsigned largest_sum = 0;
-  std::stack<std::shared_ptr<Node>> nodes;
-  std::vector<std::shared_ptr<Node>> visited;
+  unsigned largest_sum = 0, current_sum = 0;
+  
+  std::stack<std::shared_ptr<Node>> current_path;
+  std::vector<std::shared_ptr<Node>> blocked_nodes;
 
-  nodes.push(root);
+  auto node = root;
+  
+  do {
+    while (node != nullptr) {
+      std::cout << node->val << " ";
 
-  while (!nodes.empty()) {
-    auto node = nodes.top();
-    nodes.pop();
-    visited.push_back(node);
-    
-    std::cout << node->val << "\n";
+      current_path.push(node);
+      
+      if (std::find(blocked_nodes.begin(), blocked_nodes.end(), node->left) == blocked_nodes.end()) {
+	node = node->left;
+      }
+      else if (std::find(blocked_nodes.begin(), blocked_nodes.end(), node->right) == blocked_nodes.end()) {
+	node = node->right;
+      }    
+    }
+   
+    std::cout << "\n";
 
-    if (node->right != nullptr && std::find(visited.begin(), visited.end(), node->right) == visited.end()) { nodes.push(node->right); }
-    if (node->left  != nullptr && std::find(visited.begin(), visited.end(), node->left) == visited.end())  { nodes.push(node->left); }
-  }
+    node = current_path.top();
+    current_path.pop();
+
+    auto parent = current_path.top(); // node->parent not reliable as node can have two parents  
+
+    if (parent->left == node) {
+      blocked_nodes.push_back(node);
+      current_path.pop();
+      node = parent;
+    }
+    else {
+      while (parent->left != node) {
+	blocked_nodes.erase(std::remove(blocked_nodes.begin(), blocked_nodes.end(), parent->left), blocked_nodes.end());
+	blocked_nodes.erase(std::remove(blocked_nodes.begin(), blocked_nodes.end(), parent->right), blocked_nodes.end());
+	blocked_nodes.push_back(parent);
+
+	if (blocked_nodes[0] != root) {
+	  node = current_path.top();
+	  current_path.pop();
+	  parent = current_path.top();
+	} else {
+	  break; // Used to resolve the last path
+	}
+      }
+
+      if (blocked_nodes[0] != root) {
+	current_path.pop();
+	node = parent;
+      }
+    }  
+  } while (blocked_nodes[0] != root);
   
   return largest_sum;
 }
@@ -119,6 +196,7 @@ int main()
   auto t2 = std::chrono::system_clock::now();
 
   std::chrono::duration<double, std::milli> dur = t2 - t1;
+  std::cout << "Largest summation total: " << result << "\n";
   std::cout << "Time taken (milliseconds): " << dur.count() << "\n";
   return 0;
 }
