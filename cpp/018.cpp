@@ -57,60 +57,78 @@ size_t find_maximum_sum(const std::shared_ptr<Node> root)
   /* The following call is a needless expense. Esp. considering large data structures. */
   // pretty_print(root);
 
-  unsigned largest_sum = 0, current_sum = 0;
-  
+  unsigned largest_sum = 0, current_sum = root->val;
+
+  // TODO - 
   std::stack<std::shared_ptr<Node>> current_path;
+
+  /* We use blocked_nodes to prevent execution from traversing a path that has already been explored.
+   * If the current node's left child is referenced in blocked_nodes, execution will continue at the
+   * node's right child (provided that the right child isn't included in blocked_nodes, if it is, we
+   * unwind current_path to continue execution at the node's parent. */ 
   std::vector<std::shared_ptr<Node>> blocked_nodes;
 
   auto node = root;
+  bool running = true;
   
-  do {
-    while (node != nullptr) {
-      std::cout << node->val << " ";
-
+  while (running) {
+    std::cout << current_sum << "\n";
+    while (node != nullptr) { /* Until node is a leaf in the tree. */
       current_path.push(node);
       
+      /* Check each node's child in blocked_nodes. */
       if (std::find(blocked_nodes.begin(), blocked_nodes.end(), node->left) == blocked_nodes.end()) {
 	node = node->left;
       }
       else if (std::find(blocked_nodes.begin(), blocked_nodes.end(), node->right) == blocked_nodes.end()) {
-	node = node->right;
-      }    
-    }
-   
-    std::cout << "\n";
+	node = node->right;	
+      }
 
+      if (node != nullptr) { current_sum += node->val; }
+    }
+
+    std::cout << current_sum << "\n\n";
+
+    /* At this stage, node will be a nullptr so we'll set it to the node node in 'current_path'. We also
+     * want to pop node from 'current_path' so it ends with node's parent */
     node = current_path.top();
     current_path.pop();
 
+    if (largest_sum < current_sum) { largest_sum = current_sum; }
+    
     auto parent = current_path.top(); // node->parent not reliable as node can have two parents  
-
+    
     if (parent->left == node) {
       blocked_nodes.push_back(node);
       current_path.pop();
+      current_sum -= node->val;
       node = parent;
     }
     else {
-      while (parent->left != node) {
+      while (parent->left != node) { /* Until node is its parent's left child. */
+	/* As both children of parent have been explored. We remove the children from 'blocked_nodes' and push the
+	 * parent onto 'blocked_nodes'. */
 	blocked_nodes.erase(std::remove(blocked_nodes.begin(), blocked_nodes.end(), parent->left), blocked_nodes.end());
 	blocked_nodes.erase(std::remove(blocked_nodes.begin(), blocked_nodes.end(), parent->right), blocked_nodes.end());
 	blocked_nodes.push_back(parent);
-
+	
 	if (blocked_nodes[0] != root) {
+	  current_sum -= node->val;
 	  node = current_path.top();
 	  current_path.pop();
 	  parent = current_path.top();
-	} else {
-	  break; // Used to resolve the last path
+	}
+	else {
+	  /* The first element of 'blocked_nodes' being 'root' indicates that all paths have been traversed. */
+	  running = false;
+	  break;
 	}
       }
-
-      if (blocked_nodes[0] != root) {
-	current_path.pop();
-	node = parent;
-      }
+      
+      current_path.pop();
+      node = parent;
     }  
-  } while (blocked_nodes[0] != root);
+  }
   
   return largest_sum;
 }
