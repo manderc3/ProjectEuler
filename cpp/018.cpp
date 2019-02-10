@@ -47,12 +47,12 @@ void pretty_print(const std::shared_ptr<Node> root) {
 
 size_t find_maximum_sum(const std::shared_ptr<Node> root)
 {
+  if (root == nullptr) return 0;
+  
   /* The following call is a needless expense. Esp. considering large data structures. */
   // pretty_print(root);
-
-  unsigned largest_sum = 0;
   
-  std::vector<std::shared_ptr<Node>> current_path;
+  std::stack<std::shared_ptr<Node>> current_path;
 
   /* We use blocked_nodes to prevent execution from traversing a path that has already been explored.
    * If the current node's left child is referenced in blocked_nodes, execution will continue at the
@@ -60,12 +60,14 @@ size_t find_maximum_sum(const std::shared_ptr<Node> root)
    * unwind current_path to continue execution at the node's parent. */ 
   std::vector<std::shared_ptr<Node>> blocked_nodes;
 
+  unsigned largest_sum = 0, current_sum = root->val;
+  
   auto node = root;
   bool running = true;
   
   while (running) {
     while (node != nullptr) { /* Until node is a leaf in the tree. */
-      current_path.push_back(node);
+      current_path.push(node);
       
       /* Check each node's child in blocked_nodes. */
       if (std::find(blocked_nodes.begin(), blocked_nodes.end(), node->left) == blocked_nodes.end()) {
@@ -74,27 +76,25 @@ size_t find_maximum_sum(const std::shared_ptr<Node> root)
       else if (std::find(blocked_nodes.begin(), blocked_nodes.end(), node->right) == blocked_nodes.end()) {
 	node = node->right;
       }
-    }
 
-    unsigned current_sum = 0;
-    for (const auto& node : current_path) { current_sum += node->val; }
+      if (node != nullptr) { current_sum += node->val; }
+    }
 
     if (current_sum > largest_sum) { largest_sum = current_sum; }
     
     /* At this stage, node will be a nullptr so we'll set it to the node node in 'current_path'. We also
      * want to pop node from 'current_path' so it ends with node's parent */
-    node = current_path.back();
-    current_path.pop_back();
+    node = current_path.top();
+    current_path.pop();
     
     /* At this stage we have accumulated an entire paths worth of values */     
-    auto parent = current_path.back(); // node->parent not reliable as node can have two parents  
+    auto parent = current_path.top(); // node->parent not reliable as node can have two parents  
     
     if (parent->left == node) {
+      current_sum -= node->val;
       blocked_nodes.push_back(node);
-      current_path.pop_back();
-      current_sum -= node->val;
+      current_path.pop();
       node = parent;
-      current_sum -= node->val;
     }
     else {
       while (parent->left != node) { /* Until node is its parent's left child. */
@@ -106,10 +106,10 @@ size_t find_maximum_sum(const std::shared_ptr<Node> root)
 	
 	if (blocked_nodes[0] != root) {
 	  current_sum -= node->val;
-	  node = current_path.back();
-	  current_sum -= node->val;
-	  current_path.pop_back();
-	  parent = current_path.back();
+	  //node = current_path.back();
+	  node = parent;
+	  current_path.pop();
+	  parent = current_path.top();
 	}
 	else {
 	  /* The first element of 'blocked_nodes' being 'root' indicates that all paths have been traversed. */
@@ -117,8 +117,9 @@ size_t find_maximum_sum(const std::shared_ptr<Node> root)
 	  break;
 	}
       }
-      
-      current_path.pop_back();
+
+      current_sum -= node->val;
+      current_path.pop();
       node = parent;
     }  
   }
@@ -169,20 +170,20 @@ std::shared_ptr<Node> construct_tree(const std::array<int, size>& vals)
 int main()
 {
   std::array<int, 120> triangle_numbers = { 75,
-					    95, 64,
-					    17, 47, 82,
-					    18, 35, 87, 10,
-					    20, 04, 82, 47, 65,
-					    19, 01, 23, 75, 03, 34,
-					    88, 02, 77, 73, 07, 63, 67,
-					    99, 65, 04, 28, 06, 16, 70, 92,
-					    41, 41, 26, 56, 83, 40, 80, 70, 33,
-					    41, 48, 72, 33, 47, 32, 37, 16, 94, 29,
-					    53, 71, 44, 65, 25, 43, 91, 52, 97, 51, 14,
-					    70, 11, 33, 28, 77, 73, 17, 78, 39, 68, 17, 57,
-					    91, 71, 52, 38, 17, 14, 91, 43, 58, 50, 27, 29, 48,
-					    63, 66, 04, 68, 89, 53, 67, 30, 73, 16, 69, 87, 40, 31,
-					    04, 62, 98, 27, 23,  9, 70, 98, 73, 93, 38, 53, 60, 04, 23 };
+  					    95, 64,
+  					    17, 47, 82,
+  					    18, 35, 87, 10,
+  					    20, 04, 82, 47, 65,
+  					    19, 01, 23, 75, 03, 34,
+  					    88, 02, 77, 73, 07, 63, 67,
+  					    99, 65, 04, 28, 06, 16, 70, 92,
+  					    41, 41, 26, 56, 83, 40, 80, 70, 33,
+  					    41, 48, 72, 33, 47, 32, 37, 16, 94, 29,
+  					    53, 71, 44, 65, 25, 43, 91, 52, 97, 51, 14,
+  					    70, 11, 33, 28, 77, 73, 17, 78, 39, 68, 17, 57,
+  					    91, 71, 52, 38, 17, 14, 91, 43, 58, 50, 27, 29, 48,
+  					    63, 66, 04, 68, 89, 53, 67, 30, 73, 16, 69, 87, 40, 31,
+  					    04, 62, 98, 27, 23,  9, 70, 98, 73, 93, 38, 53, 60, 04, 23 };
   
   auto t1 = std::chrono::system_clock::now();
   
