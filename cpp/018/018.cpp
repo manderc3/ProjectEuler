@@ -6,12 +6,13 @@
 #include <stack>
 #include <vector>
 
-struct Node
-{
-  std::shared_ptr<Node> parent = nullptr, left = nullptr, right = nullptr;
-  int val;
-  Node(int v) : val(v) {}
-};
+#include "common.h"
+
+std::shared_ptr<Node> root;
+std::stack<std::shared_ptr<Node>> current_path;
+std::vector<std::shared_ptr<Node>> blocked_nodes;
+
+void graph_init();
 
 void pretty_print(const std::shared_ptr<Node> root) {
   std::vector<std::shared_ptr<Node>> nodes;
@@ -45,23 +46,17 @@ void pretty_print(const std::shared_ptr<Node> root) {
   }  
 }
 
-size_t find_maximum_sum(const std::shared_ptr<Node> root)
+size_t find_maximum_sum()
 {
   if (root == nullptr) return 0;
   
   /* The following call is a needless expense. Esp. considering large data structures. */
   // pretty_print(root);
-  
-  std::stack<std::shared_ptr<Node>> current_path;
 
-  /* We use blocked_nodes to prevent execution from traversing a path that has already been explored.
-   * If the current node's left child is referenced in blocked_nodes, execution will continue at the
-   * node's right child (provided that the right child isn't included in blocked_nodes, if it is, we
-   * unwind current_path to continue execution at the node's parent. */ 
-  std::vector<std::shared_ptr<Node>> blocked_nodes;
+  graph_init();
 
   unsigned largest_sum = 0, current_sum = root->val;
-  
+
   auto node = root;
   bool running = true;
   
@@ -184,10 +179,12 @@ int main()
   					    91, 71, 52, 38, 17, 14, 91, 43, 58, 50, 27, 29, 48,
   					    63, 66, 04, 68, 89, 53, 67, 30, 73, 16, 69, 87, 40, 31,
   					    04, 62, 98, 27, 23,  9, 70, 98, 73, 93, 38, 53, 60, 04, 23 };
-  
+
+  root = construct_tree<triangle_numbers.size()>(triangle_numbers);
+
   auto t1 = std::chrono::system_clock::now();
   
-  auto result = find_maximum_sum(construct_tree<triangle_numbers.size()>(triangle_numbers));
+  auto result = find_maximum_sum();
 
   auto t2 = std::chrono::system_clock::now();
 
