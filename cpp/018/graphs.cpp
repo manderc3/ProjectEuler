@@ -8,6 +8,7 @@
 /* Doesn't have all the SDL null checking boilerplate. Living dangerously today. :) */
 #include <SDL2/SDL.h>
 #include <chrono>
+#include <iostream>
 #include <stack>
 #include <thread>
 #include <vector>
@@ -20,31 +21,36 @@ static constexpr unsigned SCREEN_HEIGHT = 480;
 static SDL_Window* window;
 static SDL_Surface* screen_surface;
 
+static bool is_initialised = false;
 
-static void graph_run()
+void graph_render(const std::vector<std::shared_ptr<Node>>& current_path,
+		  const std::vector<std::shared_ptr<Node>>& blocked_nodes)
 {
-  SDL_FillRect(screen_surface, nullptr, SDL_MapRGB(screen_surface->format,
-						     0xFF, 0xFF, 0xFF));
+  if (is_initialised) {
 
+    auto root = current_path.front();
     
-  SDL_UpdateWindowSurface(window);
+    SDL_FillRect(screen_surface, nullptr, SDL_MapRGB(screen_surface->format,
+						     0xFF, 0xFF, 0xFF));
+    
+    SDL_UpdateWindowSurface(window);
 
-  std::this_thread::sleep_for(std::chrono::seconds(10));
+  }
 }
 
 void graph_init()
 {
-  SDL_Init(SDL_INIT_VIDEO);
-  window = SDL_CreateWindow("Animated Graph Yay!",
-			    SDL_WINDOWPOS_UNDEFINED,
-			    SDL_WINDOWPOS_UNDEFINED,
-			    SCREEN_WIDTH,
-			    SCREEN_HEIGHT,
-			    SDL_WINDOW_SHOWN);
+  if (!is_initialised) {
+    SDL_Init(SDL_INIT_VIDEO);
+    window = SDL_CreateWindow("Animated Graph Yay!",
+			      SDL_WINDOWPOS_UNDEFINED,
+			      SDL_WINDOWPOS_UNDEFINED,
+			      SCREEN_WIDTH,
+			      SCREEN_HEIGHT,
+			      SDL_WINDOW_SHOWN);
 
-  screen_surface = SDL_GetWindowSurface(window);
+    screen_surface = SDL_GetWindowSurface(window);
 
-  std::thread t(graph_run);
-
-  t.join();
+    is_initialised = true;
+  }
 }

@@ -3,16 +3,9 @@
 #include <chrono>
 #include <iostream>
 #include <memory>
-#include <stack>
 #include <vector>
 
 #include "common.h"
-
-std::shared_ptr<Node> root;
-std::stack<std::shared_ptr<Node>> current_path;
-std::vector<std::shared_ptr<Node>> blocked_nodes;
-
-void graph_init();
 
 void pretty_print(const std::shared_ptr<Node> root) {
   std::vector<std::shared_ptr<Node>> nodes;
@@ -46,13 +39,20 @@ void pretty_print(const std::shared_ptr<Node> root) {
   }  
 }
 
-size_t find_maximum_sum()
-{
-  if (root == nullptr) return 0;
-  
+size_t find_maximum_sum(std::shared_ptr<Node> root)
+{ 
   /* The following call is a needless expense. Esp. considering large data structures. */
   // pretty_print(root);
 
+  std::vector<std::shared_ptr<Node>> current_path;
+
+  /* We use blocked_nodes to prevent execution from traversing a path that has already been explored.
+   * If the current node's left child is referenced in blocked_nodes, execution will continue at the
+   * node's right child (provided that the right child isn't included in blocked_nodes, if it is, we
+   * unwind current_path to continue execution at the node's parent. */ 
+  std::vector<std::shared_ptr<Node>> blocked_nodes;
+
+  // Like pretty_print, this should be commented out if you want "uninterrupted" performance.
   graph_init();
 
   unsigned largest_sum = 0, current_sum = root->val;
@@ -62,7 +62,7 @@ size_t find_maximum_sum()
   
   while (running) {
     while (node != nullptr) { /* Until node is a leaf in the tree. */
-      current_path.push(node);
+      current_path.push_back(node);
       
       /* Check each node's child in blocked_nodes. */
       if (std::find(blocked_nodes.begin(), blocked_nodes.end(), node->left) == blocked_nodes.end()) {
@@ -76,19 +76,22 @@ size_t find_maximum_sum()
     }
 
     if (current_sum > largest_sum) { largest_sum = current_sum; }
-    
+
+    // Comment me out if you want "uninterrupted" performance
+    graph_render(current_path, blocked_nodes);
+      
     /* At this stage, node will be a nullptr so we'll set it to the node node in 'current_path'. We also
      * want to pop node from 'current_path' so it ends with node's parent */
-    node = current_path.top();
-    current_path.pop();
+    node = current_path.back();
+    current_path.pop_back();
     
     /* At this stage we have accumulated an entire paths worth of values */     
-    auto parent = current_path.top(); // node->parent not reliable as node can have two parents  
+    auto parent = current_path.back(); // node->parent not reliable as node can have two parents  
     
     if (parent->left == node) {
       current_sum -= node->val;
       blocked_nodes.push_back(node);
-      current_path.pop();
+      current_path.pop_back();
       node = parent;
     }
     else {
@@ -103,8 +106,8 @@ size_t find_maximum_sum()
 	  current_sum -= node->val;
 	  //node = current_path.back();
 	  node = parent;
-	  current_path.pop();
-	  parent = current_path.top();
+	  current_path.pop_back();
+	  parent = current_path.back();
 	}
 	else {
 	  /* The first element of 'blocked_nodes' being 'root' indicates that all paths have been traversed. */
@@ -114,7 +117,7 @@ size_t find_maximum_sum()
       }
 
       current_sum -= node->val;
-      current_path.pop();
+      current_path.pop_back();
       node = parent;
     }  
   }
@@ -180,11 +183,11 @@ int main()
   					    63, 66, 04, 68, 89, 53, 67, 30, 73, 16, 69, 87, 40, 31,
   					    04, 62, 98, 27, 23,  9, 70, 98, 73, 93, 38, 53, 60, 04, 23 };
 
-  root = construct_tree<triangle_numbers.size()>(triangle_numbers);
+  auto root = construct_tree<triangle_numbers.size()>(triangle_numbers);
 
   auto t1 = std::chrono::system_clock::now();
   
-  auto result = find_maximum_sum();
+  auto result = find_maximum_sum(root);
 
   auto t2 = std::chrono::system_clock::now();
 
